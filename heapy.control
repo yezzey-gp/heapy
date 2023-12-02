@@ -1,0 +1,6 @@
+# heapy extension
+comment = 'table AM for Yezzey'
+default_version = '1.0'
+module_pathname = '$libdir/heapy'
+relocatable = true
+
