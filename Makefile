@@ -4,25 +4,30 @@
 #    Makefile for access/heap
 #
 # IDENTIFICATION
-#    src/backend/access/heap/Makefile
+#    contrib/heapy/Makefile
 #
 #-------------------------------------------------------------------------
 
-subdir = src/backend/access/heap
+subdir = contrib/heapy
 top_builddir = ../../
 include $(top_builddir)/src/Makefile.global
 
 OBJS = heapam.o heapam_handler.o heapam_visibility.o hio.o pruneheap.o rewriteheap.o \
-	syncscan.o tuptoaster.o vacuumlazy.o visibilitymap.o
+	syncscan.o tuptoaster.o vacuumlazy.o visibilitymap.o \
+	ysmgr/md.o \
+	ysmgr/smgr.o \
+	src/virt_tablespace.o
 
 include $(top_srcdir)/src/backend/common.mk
 
-# PG_CPPFLAGS +=  -fPIC -I./include -Iinclude -Ilib -I$(libpq_srcdir) -I$(libpq_srcdir)/postgresql/server/utils
+PG_CPPFLAGS +=  -fPIC -I./include -Iinclude -Ilib -I$(libpq_srcdir) -I$(libpq_srcdir)/postgresql/server/utils
 
-# PG_CXXFLAGS +=  -fPIC -I./include -Iinclude -Ilib -I$(libpq_srcdir) -I$(libpq_srcdir)/postgresql/server/utils
+PG_CXXFLAGS +=  -fPIC -I./include -Iinclude -Ilib -I$(libpq_srcdir) -I$(libpq_srcdir)/postgresql/server/utils
 
 PG_CFLAGS += -fPIC
+PG_CFLAGS += -I./ysmgr
 
+PG_CFLAGS += -I./$(top_srcdir)/src/include -I./include -Iinclude -Ilib -I$(libpq_srcdir) -I$(libpq_srcdir)/postgresql/server/utils  -I$(libpq_srcdir)/postgresql/server
 
 MODULE_big = heapy
 

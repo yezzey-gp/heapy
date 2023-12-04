@@ -50,12 +50,18 @@
 #include "utils/builtins.h"
 #include "utils/rel.h"
 
+#include "ysmgr/md.h"
+
+#include "virt_tablespace.h"
+#include "ysmgr/smgr.h"
 
 
 PG_MODULE_MAGIC;
 
 PG_FUNCTION_INFO_V1(heapy_tableam_handler);
 
+PG_FUNCTION_INFO_V1(heapy_define_relation_offload_policy_internal);
+PG_FUNCTION_INFO_V1(heapy_define_relation_offload_policy_internal_seg);
 
 static void reform_and_rewrite_tuple(HeapTuple tuple,
 									 Relation OldHeap, Relation NewHeap,
@@ -265,7 +271,7 @@ heap_dml_finish(Relation relation)
  */
 
 static void
-heapam_tuple_insert(Relation relation, TupleTableSlot *slot, CommandId cid,
+heapyam_tuple_insert(Relation relation, TupleTableSlot *slot, CommandId cid,
 					int options, BulkInsertState bistate)
 {
 	bool		shouldFree = true;
@@ -2763,7 +2769,7 @@ static const TableAmRoutine heapyam_methods = {
 	.index_fetch_end = heapam_index_fetch_end,
 	.index_fetch_tuple = heapam_index_fetch_tuple,
 
-	.tuple_insert = heapam_tuple_insert,
+	.tuple_insert = heapyam_tuple_insert,
 	.tuple_insert_speculative = heapam_tuple_insert_speculative,
 	.tuple_complete_speculative = heapam_tuple_complete_speculative,
 	.multi_insert = heap_multi_insert,
@@ -2814,4 +2820,24 @@ Datum
 heapy_tableam_handler(PG_FUNCTION_ARGS)
 {
 	PG_RETURN_POINTER(&heapyam_methods);
+}
+
+
+void _PG_init(void) {
+  smgr_hook = smgr_heapy;
+#if GPBUILD
+  smgrao_hook = smgrao_yezzey;
+#endif
+  smgr_init_hook = smgr_init_heapy;
+}
+
+Datum heapy_define_relation_offload_policy_internal(PG_FUNCTION_ARGS) {
+  (void)HeapyDefineOffloadPolicy(PG_GETARG_OID(0));
+  PG_RETURN_VOID();
+}
+
+
+Datum heapy_define_relation_offload_policy_internal_seg(PG_FUNCTION_ARGS) {
+  (void)HeapyDefineOffloadPolicy(PG_GETARG_OID(0));
+  PG_RETURN_VOID();
 }
