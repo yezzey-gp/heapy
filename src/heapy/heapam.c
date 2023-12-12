@@ -1943,7 +1943,7 @@ ReleaseBulkInsertStatePin(BulkInsertState bistate)
 
 
 /*
- *	heap_insert		- insert tuple into a heap
+ *	heapy_insert		- insert tuple into a heap
  *
  * The new tuple is stamped with current transaction ID and the specified
  * command ID.
@@ -1961,7 +1961,7 @@ ReleaseBulkInsertStatePin(BulkInsertState bistate)
  * reflected into *tup.
  */
 void
-heap_insert(Relation relation, HeapTuple tup, CommandId cid,
+heapy_insert(Relation relation, HeapTuple tup, CommandId cid,
 			int options, BulkInsertState bistate, TransactionId xid)
 {
 	HeapTuple	heaptup;

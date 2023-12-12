@@ -12,8 +12,9 @@ subdir = contrib/heapy
 top_builddir = ../../
 include $(top_builddir)/src/Makefile.global
 
-OBJS = heapam.o heapam_handler.o heapam_visibility.o hio.o pruneheap.o rewriteheap.o \
-	syncscan.o tuptoaster.o vacuumlazy.o visibilitymap.o \
+OBJS = src/heapy/heapam.o src/heapy/heapam_handler.o  src/heapy/heapyam_handler.o \
+	src/heapy/heapam_visibility.o src/heapy/hio.o src/heapy/pruneheap.o src/heapy/rewriteheap.o \
+	src/heapy/syncscan.o src/heapy/tuptoaster.o src/heapy/vacuumlazy.o src/heapy/visibilitymap.o \
 	ysmgr/md.o \
 	ysmgr/smgr.o \
 	src/virt_tablespace.o

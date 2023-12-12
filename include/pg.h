@@ -112,7 +112,6 @@ extern "C" {
 #include "utils/pg_lsn.h"
 
 #if PG_VERSION_NUM >= 120000
-#include "access/heapam.h"
 #include "access/table.h"
 #include "access/tupdesc.h"
 #endif

@@ -55,6 +55,8 @@
 #include "virt_tablespace.h"
 #include "ysmgr/smgr.h"
 
+#include "heapyam_handler.h"
+
 
 PG_MODULE_MAGIC;
 
@@ -274,20 +276,7 @@ static void
 heapyam_tuple_insert(Relation relation, TupleTableSlot *slot, CommandId cid,
 					int options, BulkInsertState bistate)
 {
-	bool		shouldFree = true;
-	HeapTuple	tuple = ExecFetchSlotHeapTuple(slot, true, &shouldFree);
-	TransactionId xid = GetCurrentTransactionId();
-
-	/* Update the tuple with table oid */
-	slot->tts_tableOid = RelationGetRelid(relation);
-	tuple->t_tableOid = slot->tts_tableOid;
-
-	/* Perform the insertion, and copy the resulting ItemPointer */
-	heap_insert(relation, tuple, cid, options, bistate, xid);
-	ItemPointerCopy(&tuple->t_self, &slot->tts_tid);
-
-	if (shouldFree)
-		pfree(tuple);
+	heapyam_tuple_insert_internal(relation, slot, cid, options, bistate);
 }
 
 static void
