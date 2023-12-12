@@ -31,7 +31,6 @@
 #include <fcntl.h>
 
 #include "access/genam.h"
-#include "access/heapam.h"
 #include "access/tuptoaster.h"
 #include "access/xact.h"
 #include "catalog/catalog.h"
@@ -46,6 +45,9 @@
 
 /* GPDB additions */
 #include "utils/faultinjector.h"
+
+
+#include "heapyam.h"
 
 #undef TOAST_DEBUG
 
@@ -1911,7 +1913,7 @@ toast_save_datum(Relation rel, Datum value,
 		toasttup = heap_form_tuple(toasttupDesc, t_values, t_isnull);
 
 		/* the normal case. regular insert */
-		heap_insert(toastrel, toasttup, mycid, options, NULL, myxid);
+		heapy_insert(toastrel, toasttup, mycid, options, NULL, myxid);
 
 		/*
 		 * Create the index entry.  We cheat a little here by not using

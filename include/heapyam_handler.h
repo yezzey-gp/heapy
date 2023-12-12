@@ -10,6 +10,16 @@
 #endif
 
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+#include "heapyam.h"
+
+#ifdef __cplusplus
+}
+#endif
+
 
 EXTERNC void
 heapyam_tuple_insert_internal(Relation relation, TupleTableSlot *slot, CommandId cid,

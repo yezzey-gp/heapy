@@ -63,7 +63,6 @@
 
 #include "postgres.h"
 
-#include "access/heapam.h"
 #include "access/htup_details.h"
 #include "access/multixact.h"
 #include "access/subtrans.h"
@@ -82,6 +81,9 @@
 #include "cdb/cdbvars.h"
 
 #include "access/clog.h"
+
+
+#include "heapyam.h"
 
 /*
  * Set the buffer dirty after setting t_infomask

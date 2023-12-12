@@ -14,7 +14,6 @@
  */
 #include "postgres.h"
 
-#include "access/heapam.h"
 #include "access/heapam_xlog.h"
 #include "access/transam.h"
 #include "access/htup_details.h"
@@ -25,6 +24,9 @@
 #include "storage/bufmgr.h"
 #include "utils/snapmgr.h"
 #include "utils/rel.h"
+
+
+#include "heapyam.h"
 
 /* Working data for heap_page_prune and subroutines */
 typedef struct

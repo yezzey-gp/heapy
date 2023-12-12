@@ -34,9 +34,7 @@
 
 #include "access/bufmask.h"
 #include "access/genam.h"
-#include "access/heapam.h"
 #include "access/heapam_xlog.h"
-#include "access/hio.h"
 #include "access/multixact.h"
 #include "access/parallel.h"
 #include "access/relscan.h"
@@ -75,6 +73,8 @@
 #include "utils/guc.h"
 #include "utils/faultinjector.h"
 
+#include "heapyam.h"
+#include "hyio.h"
 
 static TM_Result heap_update_internal(Relation relation, ItemPointer otid, HeapTuple newtup,
 									  CommandId cid, Snapshot crosscheck, bool wait,
@@ -2500,7 +2500,7 @@ heap_multi_insert(Relation relation, TupleTableSlot **slots, int ntuples,
 void
 simple_heap_insert(Relation relation, HeapTuple tup)
 {
-	heap_insert(relation, tup, GetCurrentCommandId(true), 0, NULL,
+	heapy_insert(relation, tup, GetCurrentCommandId(true), 0, NULL,
 				GetCurrentTransactionId());
 }
 
@@ -2516,7 +2516,7 @@ simple_heap_insert(Relation relation, HeapTuple tup)
 void
 frozen_heap_insert(Relation relation, HeapTuple tup)
 {
-	return heap_insert(relation, tup, GetCurrentCommandId(true),
+	return heapy_insert(relation, tup, GetCurrentCommandId(true),
 					   0, NULL, FrozenTransactionId);
 }
 

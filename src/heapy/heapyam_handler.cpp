@@ -1,7 +1,8 @@
 
 
 #include "pg.h"
-#include "heapyam.h"
+
+#include "heapyam_handler.h"
 
 /* ----------------------------------------------------------------------------
  *  Functions for manipulations of physical tuples for heap AM.

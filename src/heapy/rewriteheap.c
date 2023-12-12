@@ -107,7 +107,6 @@
 
 #include "miscadmin.h"
 
-#include "access/heapam.h"
 #include "access/heapam_xlog.h"
 #include "access/rewriteheap.h"
 #include "access/transam.h"
@@ -132,6 +131,9 @@
 #include "utils/rel.h"
 
 #include "storage/procarray.h"
+
+
+#include "heapyam.h"
 
 /*
  * State associated with a rewrite operation. This is opaque to the user

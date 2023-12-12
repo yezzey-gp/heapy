@@ -37,7 +37,6 @@
 #include <math.h>
 
 #include "access/genam.h"
-#include "access/heapam.h"
 #include "access/heapam_xlog.h"
 #include "access/htup_details.h"
 #include "access/multixact.h"
@@ -73,6 +72,9 @@
 #include "storage/smgr.h"
 #include "utils/faultinjector.h"
 #include "utils/snapmgr.h"
+
+
+#include "heapyam.h"
 
 
 /*

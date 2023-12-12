@@ -15,14 +15,17 @@
 
 #include "postgres.h"
 
-#include "access/heapam.h"
-#include "access/hio.h"
 #include "access/htup_details.h"
 #include "access/visibilitymap.h"
 #include "storage/bufmgr.h"
 #include "storage/freespace.h"
 #include "storage/lmgr.h"
 #include "storage/smgr.h"
+
+
+#include "heapyam.h"
+
+#include "hyio.h"
 
 
 /*

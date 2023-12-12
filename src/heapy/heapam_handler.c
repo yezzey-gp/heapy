@@ -24,7 +24,6 @@
 #include "miscadmin.h"
 
 #include "access/genam.h"
-#include "access/heapam.h"
 #include "access/multixact.h"
 #include "access/rewriteheap.h"
 #include "access/tableam.h"
@@ -54,6 +53,9 @@
 
 #include "virt_tablespace.h"
 #include "ysmgr/smgr.h"
+
+
+#include "heapyam.h"
 
 #include "heapyam_handler.h"
 
@@ -296,7 +298,7 @@ heapam_tuple_insert_speculative(Relation relation, TupleTableSlot *slot,
 	options |= HEAP_INSERT_SPECULATIVE;
 
 	/* Perform the insertion, and copy the resulting ItemPointer */
-	heap_insert(relation, tuple, cid, options, bistate, xid);
+	heapy_insert(relation, tuple, cid, options, bistate, xid);
 	ItemPointerCopy(&tuple->t_self, &slot->tts_tid);
 
 	if (shouldFree)
