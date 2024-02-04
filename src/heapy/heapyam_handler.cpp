@@ -14,8 +14,8 @@ heapyam_tuple_insert_internal(Relation relation, TupleTableSlot *slot, CommandId
 					int options, BulkInsertState bistate)
 {
 	bool		shouldFree = true;
-	HeapTuple	tuple = ExecFetchSlotHeapTuple(slot, true, &shouldFree);
-	TransactionId xid = GetCurrentTransactionId();
+	auto	tuple = ExecFetchSlotHeapTuple(slot, true, &shouldFree);
+	auto xid = GetCurrentTransactionId();
 
 	/* Update the tuple with table oid */
 	slot->tts_tableOid = RelationGetRelid(relation);
@@ -24,6 +24,12 @@ heapyam_tuple_insert_internal(Relation relation, TupleTableSlot *slot, CommandId
 	/* Perform the insertion, and copy the resulting ItemPointer */
 	heapy_insert(relation, tuple, cid, options, bistate, xid);
 	ItemPointerCopy(&tuple->t_self, &slot->tts_tid);
+
+	/* update metadata fork */
+
+	auto oldSmgr = RelationGetSmgr(relation);
+	
+	RelationGetSmgr(relation) = ;
 
 	if (shouldFree)
 		pfree(tuple);

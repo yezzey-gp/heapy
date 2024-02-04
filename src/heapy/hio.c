@@ -80,14 +80,14 @@ RelationPutHeapTuple(Relation relation pg_attribute_unused(),
  * Read in a buffer in mode, using bulk-insert strategy if bistate isn't NULL.
  */
 static Buffer
-ReadBufferBI(Relation relation, BlockNumber targetBlock,
-			 ReadBufferMode mode, BulkInsertState bistate)
+YReadBufferBI(Relation relation, BlockNumber targetBlock,
+			 ReadBufferMode mode, BulkInsertState bistate, ForkNumber fn)
 {
 	Buffer		buffer;
 
 	/* If not bulk-insert, exactly like ReadBuffer */
 	if (!bistate)
-		return ReadBufferExtended(relation, MAIN_FORKNUM, targetBlock,
+		return ReadBufferExtended(relation, fn, targetBlock,
 								  mode, NULL);
 
 	/* If we have the desired block already pinned, re-pin and return it */
@@ -111,7 +111,7 @@ ReadBufferBI(Relation relation, BlockNumber targetBlock,
 	}
 
 	/* Perform a read using the buffer strategy */
-	buffer = ReadBufferExtended(relation, MAIN_FORKNUM, targetBlock,
+	buffer = ReadBufferExtended(relation, fn, targetBlock,
 								mode, bistate->strategy);
 
 	/* Save the selected block as target for future inserts */
@@ -186,7 +186,7 @@ GetVisibilityMapPins(Relation relation, Buffer buffer1, Buffer buffer2,
  * the result to some sane overall value.
  */
 static void
-RelationAddExtraBlocks(Relation relation, BulkInsertState bistate)
+RelationAddExtraBlocks(Relation relation, BulkInsertState bistate, ForkNumber fn)
 {
 	BlockNumber blockNum,
 				firstBlock = InvalidBlockNumber;
@@ -218,7 +218,7 @@ RelationAddExtraBlocks(Relation relation, BulkInsertState bistate)
 		 * the relation extension lock throughout, and we don't immediately
 		 * initialize the page (see below).
 		 */
-		buffer = ReadBufferBI(relation, P_NEW, RBM_ZERO_AND_LOCK, bistate);
+		buffer = YReadBufferBI(relation, P_NEW, RBM_ZERO_AND_LOCK, bistate, fn);
 		page = BufferGetPage(buffer);
 
 		if (!PageIsNew(page))
@@ -324,10 +324,10 @@ RelationAddExtraBlocks(Relation relation, BulkInsertState bistate)
  *	before any (unlogged) changes are made in buffer pool.
  */
 Buffer
-RelationGetBufferForTuple(Relation relation, Size len,
+YRelationGetBufferForTuple(Relation relation, Size len,
 						  Buffer otherBuffer, int options,
 						  BulkInsertState bistate,
-						  Buffer *vmbuffer, Buffer *vmbuffer_other)
+						  Buffer *vmbuffer, Buffer *vmbuffer_other, ForkNumber fn)
 {
 	bool		use_fsm = !(options & HEAP_INSERT_SKIP_FSM);
 	Buffer		buffer = InvalidBuffer;
@@ -426,7 +426,7 @@ loop:
 		if (otherBuffer == InvalidBuffer)
 		{
 			/* easy case */
-			buffer = ReadBufferBI(relation, targetBlock, RBM_NORMAL, bistate);
+			buffer = YReadBufferBI(relation, targetBlock, RBM_NORMAL, bistate, fn);
 			if (PageIsAllVisible(BufferGetPage(buffer)))
 				visibilitymap_pin(relation, targetBlock, vmbuffer);
 			LockBuffer(buffer, BUFFER_LOCK_EXCLUSIVE);
@@ -598,7 +598,7 @@ loop:
 	 * it worth keeping an accurate file length in shared memory someplace,
 	 * rather than relying on the kernel to do it for us?
 	 */
-	buffer = ReadBufferBI(relation, P_NEW, RBM_ZERO_AND_LOCK, bistate);
+	buffer = YReadBufferBI(relation, P_NEW, RBM_ZERO_AND_LOCK, bistate, fn);
 
 	/*
 	 * We need to initialize the empty new page.  Double-check that it really

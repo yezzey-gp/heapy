@@ -126,6 +126,17 @@ static MemoryContext MdCxt;		/* context for all MdfdVec objects */
 #define EXTENSION_DONT_CHECK_SIZE	(1 << 4)
 
 
+/*
+ * Lookup table of fork name by fork number.
+ *
+ * If you add a new entry, remember to update the errhint in
+ * forkname_to_number() below, and update the SGML documentation for
+ * pg_relation_size().
+ */
+const char *const forkNamesHeapy[] = {
+	"main",						/* MAIN_FORKNUM */
+	"meta",						/* META_FORKNUM */
+};
 
 
 /*
@@ -162,7 +173,31 @@ GetYRelationPath(Oid dbNode, Oid spcNode, Oid relNode,
 		else
 			path = psprintf("global/%u_y", relNode);
 	}
-	else if (spcNode == DEFAULTTABLESPACE_OID || spcNode == HEAPYTABLESPACE_OID)
+	else if (spcNode == HEAPYTABLESPACE_OID) {
+		Assert(forkNumber < 2);
+		/* The default tablespace is {datadir}/base */
+		if (backendId == InvalidBackendId)
+		{
+			if (forkNumber != MAIN_FORKNUM)
+				path = psprintf("base/%u/%u_y_%s",
+								dbNode, relNode,
+								forkNamesHeapy[forkNumber]);
+			else
+				path = psprintf("base/%u/%u_y",
+								dbNode, relNode);
+		}
+		else
+		{
+			if (forkNumber != MAIN_FORKNUM)
+				path = psprintf("base/%u/t_%u_%s",
+								dbNode, relNode,
+								forkNamesHeapy[forkNumber]);
+			else
+				path = psprintf("base/%u/t_%u",
+								dbNode, relNode);
+		}
+	}
+	else if (spcNode == DEFAULTTABLESPACE_OID)
 	{
 		/* The default tablespace is {datadir}/base */
 		if (backendId == InvalidBackendId)
